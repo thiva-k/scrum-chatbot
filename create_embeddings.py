@@ -1,19 +1,24 @@
 import os
 import uuid
 import PyPDF2
-import pickle
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
+import chromadb
+from chromadb.config import Settings
 
 # Initialize SentenceTransformer embeddings model
 embeddings_model = SentenceTransformer('all-mpnet-base-v2')
 
+# Initialize ChromaDB client and create or get the collection
+# Changed this line to use PersistentClient with a storage path
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+collection = chroma_client.get_or_create_collection(name="scrum_embeddings")
+
 # List of PDF file paths
 pdf_filepaths = [
-    "C:/Users/ASUS/Downloads/ResearchScrum.pdf",  # Replace with your actual PDF paths
-    "C:/Users/ASUS/Downloads/Scrum Whitepaper_web.pdf",  # Add more PDFs as needed
+    "C:/Users/ASUS/Downloads/ResearchScrum.pdf",
+    "C:/Users/ASUS/Downloads/Scrum Whitepaper_web.pdf",
     "C:/Users/ASUS/Downloads/SCRUM-in-Agile.pdf"
-    # Add other PDF paths as necessary
 ]
 
 def extract_text_from_pdf(pdf_path):
@@ -21,37 +26,28 @@ def extract_text_from_pdf(pdf_path):
     with open(pdf_path, 'rb') as f:
         reader = PyPDF2.PdfReader(f)
         for page in reader.pages:
-            text += page.extract_text() or ""  # Handle None text case
+            text += page.extract_text() or ""
     return text
 
-def process_and_embed_pdf(pdf_path):
+def process_and_store_pdf_in_chromadb(pdf_path):
     text = extract_text_from_pdf(pdf_path)
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     texts = text_splitter.split_text(text)
-    embeddings = [embeddings_model.encode(t) for t in texts]
+    embeddings = [embeddings_model.encode(t).tolist() for t in texts]
     metadatas = [{"source": pdf_path, "text": t} for t in texts]
     ids = [str(uuid.uuid4()) for _ in texts]
-    return {"texts": texts, "embeddings": embeddings, "metadatas": metadatas, "ids": ids}
 
-# Initialize lists to hold combined data
-combined_data = {
-    "texts": [],
-    "embeddings": [],
-    "metadatas": [],
-    "ids": []
-}
+    # Add documents to ChromaDB collection
+    collection.add(
+        documents=texts,
+        metadatas=metadatas,
+        ids=ids,
+        embeddings=embeddings
+    )
+    print(f"Processed and stored {pdf_path}.")
 
-# Process each PDF file
+# Process each PDF file and store in ChromaDB
 for pdf_filepath in pdf_filepaths:
-    data = process_and_embed_pdf(pdf_filepath)
-    combined_data["texts"].extend(data["texts"])
-    combined_data["embeddings"].extend(data["embeddings"])
-    combined_data["metadatas"].extend(data["metadatas"])
-    combined_data["ids"].extend(data["ids"])
-    print(f"Processed {pdf_filepath}.")
+    process_and_store_pdf_in_chromadb(pdf_filepath)
 
-# Save combined embeddings to a .pkl file
-with open("preprocessed_embeddings.pkl", "wb") as f:
-    pickle.dump(combined_data, f)
-
-print("Combined embeddings and text data saved to 'preprocessed_embeddings.pkl'.")
+print("All PDFs have been processed and stored in ChromaDB.")
