@@ -1,8 +1,9 @@
-streamlit
-google-generativeai
 sentence-transformers
 numpy
-protobuf==3.20.0
 chromadb==0.4.22
 langchain
 PyPDF2
+google-generativeai>=0.8.2
+protobuf>=3.20.2,<4.21.0
+google-ai-generativelanguage>=0.6.9
+streamlit>=1.24.0
