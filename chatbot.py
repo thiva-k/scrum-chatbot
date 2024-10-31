@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
 
-np.float_ = np.float64
 
 # Configure Google Generative AI API
 genai.configure(api_key="AIzaSyC7Aew8RBOsdhJIVz8OD8UUtKmBfdJbayI")  # Replace with your actual API key
