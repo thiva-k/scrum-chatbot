@@ -12,6 +12,7 @@ embeddings_model = SentenceTransformer('all-mpnet-base-v2')
 pdf_filepaths = [
     "C:/Users/ASUS/Downloads/ResearchScrum.pdf",  # Replace with your actual PDF paths
     "C:/Users/ASUS/Downloads/Scrum Whitepaper_web.pdf",  # Add more PDFs as needed
+    "C:/Users/ASUS/Downloads/SCRUM-in-Agile.pdf"
     # Add other PDF paths as necessary
 ]
 
