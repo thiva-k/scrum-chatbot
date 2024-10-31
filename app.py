@@ -3,9 +3,6 @@ import streamlit as st
 import os
 import sys
 
-# Set environment variable
-os.environ['PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION'] = 'python'
-
 try:
     from chatbot import run_chatbot
 except Exception as e:
