@@ -7,7 +7,7 @@ from chromadb.config import Settings
 
 
 # Configure Google Generative AI API
-genai.configure(api_key="AIzaSyC7Aew8RBOsdhJIVz8OD8UUtKmBfdJbayI")  # Replace with your actual API key
+genai.configure(api_key=os.getenv("API_KEY"))  # Replace with your actual API key
 
 generation_config = {
     "temperature": 1,
