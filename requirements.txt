@@ -6,5 +6,4 @@ google-generativeai==0.8.3
 protobuf==3.20.3
 google-ai-generativelanguage==0.6.10
 streamlit
-chromadb==0.5.16
-pysqlite3
+chromadb==0.3.29
