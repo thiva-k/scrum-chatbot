@@ -14,6 +14,19 @@ except Exception as e:
 
 st.title("Scrum Chatbot")
 
+st.markdown(
+    """
+    <style>
+    .css-1jc7ptx, .e1ewe7hr3, .viewerBadge_container__1QSob,
+    .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
+    .viewerBadge_text__1JaDK {
+        display: none;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
