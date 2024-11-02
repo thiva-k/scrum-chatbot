@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
 
-
 # Configure Google Generative AI API
 genai.configure(api_key=os.getenv("API_KEY"))  # Replace with your actual API key
 
@@ -63,8 +62,14 @@ def run_chatbot(user_input):
 
         # Generate response
         response = chat_session.send_message(full_prompt)
-        conversation_history.append("Chatbot: " + response.text)
-        return response.text.append("\n\nContext from uploaded documents: " + context)  # Append context to response
+        bot_response = response.text
+        
+        # Add context information to the response if available
+        if context:
+            bot_response = f"{bot_response}\n\nContext from uploaded documents: {context}"
+            
+        conversation_history.append("Chatbot: " + bot_response)
+        return bot_response
 
     except Exception as e:
         import traceback
