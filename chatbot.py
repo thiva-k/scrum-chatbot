@@ -53,6 +53,7 @@ def run_chatbot(user_input):
         # Safely access results
         context_items = results.get('documents', [[]])[0]
         context = "\n".join(context_items) if context_items else ""
+        print(f"Context from uploaded documents: {context}")
 
         # Construct prompt with conversation history and context
         full_prompt = f"""Assume you are a scrum software process assisting chatbot.
@@ -63,7 +64,7 @@ def run_chatbot(user_input):
         # Generate response
         response = chat_session.send_message(full_prompt)
         conversation_history.append("Chatbot: " + response.text)
-        return response.text
+        return response.text.append("\n\nContext from uploaded documents: " + context)  # Append context to response
 
     except Exception as e:
         import traceback
