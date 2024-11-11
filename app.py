@@ -9,7 +9,7 @@ except Exception as e:
     st.error(f"Error loading chatbot: {str(e)}")
     st.stop()
 
-st.title("Scrum Chatbot")
+st.title("Scrum Assistant")
 
 # Initialize chat history
 if "messages" not in st.session_state:
