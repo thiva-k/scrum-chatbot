@@ -33,11 +33,7 @@ collection = chroma_client.get_or_create_collection(
 # Initialize the embeddings model
 embeddings_model = SentenceTransformer('all-mpnet-base-v2')
 
-conversation_history = []
-
 def run_chatbot(user_input):
-    conversation_history.append("User: " + user_input)
-
     try:
         # Convert embeddings to float64 explicitly
         question_embedding = np.array(embeddings_model.encode(user_input), dtype=np.float64).tolist()
@@ -58,7 +54,7 @@ def run_chatbot(user_input):
         full_prompt = f"""Assume you are a scrum software process assisting chatbot.
         Answer only queries related to it in a professional and detailed manner:
 
-        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. Prioritize your own knowledge in any case and ignore the context from uploaded documents, if your own knowledge itself has a better answer. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n""" + "\n".join(conversation_history[-10:])  # Limit context window
+        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. Prioritize your own knowledge in any case and ignore the context from uploaded documents, if your own knowledge itself has a better answer. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n"""
 
         # Generate response
         response = chat_session.send_message(full_prompt)
@@ -68,7 +64,6 @@ def run_chatbot(user_input):
         if context:
             bot_response = f"{bot_response}\n\nContext from uploaded documents: {context}"
             
-        conversation_history.append("Chatbot: " + bot_response)
         return bot_response
 
     except Exception as e:

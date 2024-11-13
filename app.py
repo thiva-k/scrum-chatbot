@@ -1,18 +1,11 @@
-# app.py
-import streamlit as st
 import os
+import streamlit as st
 import sys
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import sqlite3
-
-
-try:
-    from chatbot import run_chatbot
-except Exception as e:
-    st.error(f"Error loading chatbot: {str(e)}")
-    st.stop()
+from chatbot import run_chatbot
 
 st.title("Scrum Chatbot")
 
@@ -29,7 +22,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Initialize chat history
+# Initialize chat history in the current session
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
