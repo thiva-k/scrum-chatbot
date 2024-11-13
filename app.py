@@ -32,12 +32,6 @@ st.markdown(
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-if "conversation_history" not in st.session_state:
-    st.session_state.conversation_history = []
-
-if "chat_session" not in st.session_state:
-    st.session_state.chat_session = None
-
 # Display chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):

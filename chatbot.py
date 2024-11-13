@@ -1,10 +1,10 @@
-import streamlit as st
 import os
 import google.generativeai as genai
 import numpy as np
 from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
+
 
 # Configure Google Generative AI API
 genai.configure(api_key=os.getenv("API_KEY"))  # Replace with your actual API key
@@ -17,12 +17,12 @@ generation_config = {
     "response_mime_type": "text/plain",
 }
 
-# Initialize chat session if None
-if st.session_state["chat_session"] is None:
-    st.session_state["chat_session"] = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
-        generation_config=generation_config,
-    ).start_chat()
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=generation_config,
+)
+
+chat_session = model.start_chat()
 
 # Initialize ChromaDB client and get or create the collection
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
@@ -34,8 +34,10 @@ collection = chroma_client.get_or_create_collection(
 # Initialize the embeddings model
 embeddings_model = SentenceTransformer('all-mpnet-base-v2')
 
+conversation_history = []
+
 def run_chatbot(user_input):
-    st.session_state["conversation_history"].append("User: " + user_input)
+    conversation_history.append("User: " + user_input)
 
     try:
         # Convert embeddings to float64 explicitly
@@ -56,11 +58,11 @@ def run_chatbot(user_input):
         full_prompt = f"""Assume you are a scrum software process assisting chatbot.
         Answer only queries related to it in a professional and detailed manner:
 
-        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. Prioritize your own knowledge in any case and ignore the context from uploaded documents, if your own knowledge itself has a better answer. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n""" + "\n".join(st.session_state["conversation_history"][-10:])  # Limit context window
+        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. Prioritize your own knowledge in any case and ignore the context from uploaded documents, if your own knowledge itself has a better answer. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n""" + "\n".join(conversation_history[-10:])  # Limit context window
 
         # Generate response
-        response = st.session_state["chat_session"].send_message(full_prompt)
-        st.session_state["conversation_history"].append("Chatbot: " + response.text)
+        response = chat_session.send_message(full_prompt)
+        conversation_history.append("Chatbot: " + response.text)
         return response.text
 
     except Exception as e:
