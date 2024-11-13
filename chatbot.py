@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
 
-
 # Configure Google Generative AI API
 genai.configure(api_key=os.getenv("API_KEY"))  # Replace with your actual API key
 
@@ -34,10 +33,9 @@ collection = chroma_client.get_or_create_collection(
 # Initialize the embeddings model
 embeddings_model = SentenceTransformer('all-mpnet-base-v2')
 
-conversation_history = []
-
-def run_chatbot(user_input):
-    conversation_history.append("User: " + user_input)
+def run_chatbot(user_input, messages):
+    # Format the conversation history for the prompt
+    conversation_history = [f"{msg['role'].capitalize()}: {msg['content']}" for msg in messages[-10:]]  # Limit to last 10 messages
 
     try:
         # Convert embeddings to float64 explicitly
@@ -49,7 +47,7 @@ def run_chatbot(user_input):
             n_results=3,  # Fetch top 3 matches
             include=["documents"]  # Explicitly specify what to include in results
         )
-        
+
         # Safely access results
         context_items = results.get('documents', [[]])[0]
         context = "\n".join(context_items) if context_items else ""
@@ -58,11 +56,10 @@ def run_chatbot(user_input):
         full_prompt = f"""Assume you are a scrum software process assisting chatbot.
         Answer only queries related to it in a professional and detailed manner:
 
-        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. Prioritize your own knowledge in any case and ignore the context from uploaded documents, if your own knowledge itself has a better answer. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n""" + "\n".join(conversation_history[-10:])  # Limit context window
+        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. Prioritize your own knowledge in any case and ignore the context from uploaded documents, if your own knowledge itself has a better answer. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n""" + "\n".join(conversation_history)
 
         # Generate response
         response = chat_session.send_message(full_prompt)
-        conversation_history.append("Chatbot: " + response.text)
         return response.text
 
     except Exception as e:

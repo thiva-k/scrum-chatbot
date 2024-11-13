@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import os
 import sys
@@ -28,7 +27,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Initialize chat history
+# Initialize chat history for the current session only
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -46,14 +45,14 @@ if prompt := st.chat_input("Ask about Scrum..."):
 
     try:
         # Get chatbot response
-        response = run_chatbot(prompt)
-        
+        response = run_chatbot(prompt, st.session_state.messages)
+
         # Display assistant response
         with st.chat_message("assistant"):
             st.markdown(response)
-        
+
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-    
+
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
