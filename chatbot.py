@@ -1,9 +1,4 @@
 import streamlit as st
-
-# Initialize session state FIRST, before any other code
-st.session_state["conversation_history"] = st.session_state.get("conversation_history", [])
-st.session_state["chat_session"] = st.session_state.get("chat_session", None)
-
 import os
 import google.generativeai as genai
 import numpy as np
