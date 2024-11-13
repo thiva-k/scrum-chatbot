@@ -1,25 +1,29 @@
+import streamlit as st
+
+# Initialize session state FIRST, before any other code
+st.session_state["conversation_history"] = st.session_state.get("conversation_history", [])
+st.session_state["chat_session"] = st.session_state.get("chat_session", None)
+
 import os
 import google.generativeai as genai
 import numpy as np
 from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.config import Settings
-import streamlit as st
 
-# Safe initialization of session state
-if not getattr(st.session_state, "conversation_history", None):
-    st.session_state["conversation_history"] = []
+# Configure Google Generative AI API
+genai.configure(api_key=os.getenv("API_KEY"))  # Replace with your actual API key
 
-if not getattr(st.session_state, "chat_session", None):
-    generation_config = {
-        "temperature": 1,
-        "top_p": 0.95,
-        "top_k": 64,
-        "max_output_tokens": 8192,
-        "response_mime_type": "text/plain",
-    }
-    
-    genai.configure(api_key=os.getenv("API_KEY"))
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+
+# Initialize chat session if None
+if st.session_state["chat_session"] is None:
     st.session_state["chat_session"] = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
         generation_config=generation_config,
