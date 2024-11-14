@@ -16,9 +16,7 @@ collection = chroma_client.get_or_create_collection(name="scrum_embeddings")
 
 # List of PDF file paths
 pdf_filepaths = [
-    "C:/Users/ASUS/Downloads/ResearchScrum.pdf",
-    "C:/Users/ASUS/Downloads/Scrum Whitepaper_web.pdf",
-    "C:/Users/ASUS/Downloads/SCRUM-in-Agile.pdf"
+
 ]
 
 def extract_text_from_pdf(pdf_path):
