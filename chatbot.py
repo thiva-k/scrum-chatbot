@@ -58,7 +58,7 @@ def run_chatbot(user_input):
         full_prompt = f"""Assume you are a scrum software process assisting chatbot.
         Answer only queries related to it in a professional and detailed manner:
 
-        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. If the query is not related to scrum, say I cannot answer out of context or something similar:\n{context}\n\n""" + "\n".join(conversation_history[-10:])  # Limit context window
+        Context from uploaded documents, use this only as an additional input to your existing knowledge, if it is related to the query or else ignore it and use your own knowledge. If the query is not related to scrum, say I cannot answer out of context:\n{context}\n\n""" + "\n Chat history: ".join(conversation_history[-10:])  # Limit context window
 
         # Generate response
         response = chat_session.send_message(full_prompt)
